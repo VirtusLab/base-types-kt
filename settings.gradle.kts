@@ -1,1 +1,1 @@
-include(":result-rxjava", ":result-reactor", ":refined-types")
+include(":result-rxjava", ":result-reactor", ":result-arrow", ":refined-types")
