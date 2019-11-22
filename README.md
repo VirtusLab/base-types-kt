@@ -1,35 +1,33 @@
 # base-types-kt
 
-Set of libraries with base types for Kotlin. 
+Set of libraries with some basic types for Kotlin to support **domain-driven functional programming**. 
 
-The libraries are created to support domain-driven functional programming better. 
-
-Used concepts are Railway-Oriented Programming (ROP)
+Incorporated concepts are Railway-Oriented Programming (ROP)
  and Domain-Driven Design (DDD).
 
 ### Work in progress
-- ROP with Project Reactor
-    - MonoResult
-    - ...
-    
-        
+
 - Refined data types
+    - RawText
     - NonEmptyText
     - NonEmptySet
-    - NonEmptyList
     - Digit
     - WholeNumber
     - NaturalNumber
     - NonNegativeRealNumber
     - ...
+    
 
+- ROP with Project Reactor
+    - MonoResult = Mono<Result<T, E>>
+    - CompletableResult = Mono<Result<Unit, E>>    
+        
+        
+- ROP with `arrow-kt`'s IO monad
+    - AsyncResult = IO<Result<T, E>>
 
 ### Coming in the future
 - ROP with RxJava 2
-    - SingleResult
+    - SingleResult = Single<Result<T, E>>
     - CompletableResult
-    - ObservableResult
     
-    
-- ROP with arrow-kt's IO
-    - AsyncResult
