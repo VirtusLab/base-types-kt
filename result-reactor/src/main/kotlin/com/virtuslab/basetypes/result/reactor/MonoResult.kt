@@ -5,6 +5,7 @@ import com.github.kittinunf.result.Result.Failure
 import com.github.kittinunf.result.Result.Success
 import com.github.kittinunf.result.flatMap
 import com.github.kittinunf.result.map
+import com.github.kittinunf.result.mapError
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
@@ -17,6 +18,11 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.map(mapper: (S) -> S2): 
         it.map(mapper)
     }
 
+fun <S : Any, E : Exception, E2 : java.lang.Exception> MonoResult<S, E>.mapError(mapper: (E) -> E2): MonoResult<S, E2> =
+    this.map {
+        it.mapError(mapper)
+    }
+
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.mapResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
     this.map {
         it.flatMap(mapper)
@@ -26,6 +32,14 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMap(mapper: (S) -> M
     this.flatMap { result1 ->
         when (result1) {
             is Success -> mapper(result1.value)
+            is Failure -> Failure(result1.error).toMono()
+        }
+    }
+
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapMono(mapper: (S) -> Mono<S2>, errorHandler: (Throwable) -> E): MonoResult<S2, E> =
+    this.flatMap { result1 ->
+        when (result1) {
+            is Success -> mapper(result1.value).toResult(errorHandler)
             is Failure -> Failure(result1.error).toMono()
         }
     }
