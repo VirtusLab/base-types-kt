@@ -1,4 +1,4 @@
-package com.virtuslab.basetypes.result.reactor
+package com.virtuslab.basetypes.result.arrow
 
 import arrow.fx.IO
 import com.github.kittinunf.result.Result

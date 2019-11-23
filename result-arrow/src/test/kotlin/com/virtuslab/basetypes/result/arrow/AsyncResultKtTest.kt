@@ -1,4 +1,4 @@
-package com.virtuslab.basetypes.result.reactor
+package com.virtuslab.basetypes.result.arrow
 
 import com.github.kittinunf.result.Result
 import io.kotlintest.shouldBe
