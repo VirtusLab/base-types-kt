@@ -12,7 +12,7 @@ fun <T : Any, E : Exception> Result<T, E>.liftAsync(): AsyncResult<T, E> =
     IO.just(this)
 
 
-infix fun <T1 : Any, T2 : Any, E : Exception> Result<T1, E>.then(f: (T1) -> Result<T2, E>) =
+infix fun <T1 : Any, T2 : Any, E : Exception> Result<T1, E>.then(f: (T1) -> Result<T2, E>): Result<T2, E> =
     when (this) {
         is Success -> f(this.value)
         is Failure -> Failure(this.error)
