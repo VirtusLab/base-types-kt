@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 sourceSets {
     getByName("main").java.srcDirs("src/main/kotlin")
     getByName("test").java.srcDirs("src/main/kotlin")
@@ -17,7 +19,11 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:$arrow")
     implementation("io.arrow-kt:arrow-core-data:$arrow")
-    
+
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit")
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
 }
