@@ -29,7 +29,7 @@ infix fun <T1 : Any, T2 : Any, E : Exception> AsyncResult<T1, E>.then(f: (T1) ->
         }
     }
 
-infix fun <T1 : Any, T2 : Any, E : Exception> Result<T1, E>.thenDoAsync(f: (T1) -> AsyncResult<T2, E>): AsyncResult<T2, E> =
+infix fun <T1 : Any, T2 : Any, E : Exception> Result<T1, E>.thenAsync(f: (T1) -> AsyncResult<T2, E>): AsyncResult<T2, E> =
     when (this) {
         is Success -> f(this.value)
         is Failure -> Failure(this.error).liftAsync()
@@ -37,4 +37,4 @@ infix fun <T1 : Any, T2 : Any, E : Exception> Result<T1, E>.thenDoAsync(f: (T1) 
 
 infix fun <T1 : Any, T2 : Any, E : Exception> T1.to(f: (T1) -> Result<T2, E>): Result<T2, E> = Success(this) then f
 
-infix fun <T1 : Any, T2 : Any, E : Exception> T1.toAsyncResult(f: (T1) -> AsyncResult<T2, E>): AsyncResult<T2, E> = Success(this) thenDoAsync f
+infix fun <T1 : Any, T2 : Any, E : Exception> T1.toAsyncResult(f: (T1) -> AsyncResult<T2, E>): AsyncResult<T2, E> = Success(this) thenAsync f

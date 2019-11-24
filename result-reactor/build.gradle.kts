@@ -19,4 +19,5 @@ dependencies {
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit")
+    testImplementation("io.projectreactor:reactor-test:3.2.3.RELEASE")
 }

@@ -58,7 +58,7 @@ internal class AsyncResultKtTest {
     fun `given first AsyncResult is failure when doing then thenDoAsync it whole should return failure`() {
         shouldThrow<RuntimeException> {
             Result.error(RuntimeException("Boo"))
-                .thenDoAsync { Result.success("Some other value").liftAsync() }
+                .thenAsync { Result.success("Some other value").liftAsync() }
                 .unsafeRunSync()
                 .get()
         }
@@ -82,7 +82,7 @@ internal class AsyncResultKtTest {
     @Test
     fun `Result should be thenable with AsyncResult`() {
         Result.success("Some success value")
-            .thenDoAsync { Result.success("Some other value").liftAsync() }
+            .thenAsync { Result.success("Some other value").liftAsync() }
             .unsafeRunSync().get() shouldBe "Some other value"
     }
 
