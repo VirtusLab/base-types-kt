@@ -1,68 +1,137 @@
 package com.virtuslab.basetypes.result.reactor
 
 import com.github.kittinunf.result.Result
-import org.junit.jupiter.api.Test
+import io.kotlintest.specs.StringSpec
+import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 import reactor.test.test
-import java.lang.IllegalStateException
-import java.lang.RuntimeException
 
-class MonoResultKtTest {
+internal class MonoResultKtTest : StringSpec() {
 
-    @Test
-    fun `should be mappable`() {
-        val monoResult: MonoResult<String, Nothing> = "Some value".toMonoResult()
+    init {
+        "should map success" {
+            val monoResult: MonoResult<String, Nothing> = "Some value".justMonoResult()
 
-        monoResult.mapResult { "Some other value" }
-            .test()
-            .expectNext(Result.success("Some other value"))
-            .verifyComplete()
-    }
+            monoResult.mapSuccess { "Some other value" }
+                .test()
+                .expectNext(Result.success("Some other value"))
+                .verifyComplete()
+        }
 
-    @Test
-    fun `should be flatMappable`() {
-        val monoResult: MonoResult<String, Nothing> = "Some value".toMonoResult()
+        "should keep error when mapping success" {
+            val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
-        monoResult.flatMapResult { x: String -> Result.success("$x some other") }
-            .test()
-            .expectNext(Result.success("Some value some other"))
-    }
+            monoResult.mapSuccess { "Some other value" }
+                .test()
+                .expectNext(Result.error(SomeFailure("Some failure")))
+                .verifyComplete()
+        }
 
-    @Test
-    fun `should be able to map error in result`() {
-        val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("Some value")).liftToMono()
+        "should flatMap success"{
+            val monoResult: MonoResult<String, Nothing> = "Some value".justMonoResult()
 
-        monoResult.mapResultError { IllegalStateException("It was illegal state") }
-            .test()
-            .expectNext(Result.error(IllegalStateException("It was illegal state")))
-    }
+            monoResult.flatMapSuccessResult { x: String -> Result.success("$x some other") }
+                .test()
+                .expectNext(Result.success("Some value some other"))
+                .verifyComplete()
+        }
 
-    @Test
-    fun `should flatmap monoresult`() {
-        val monoResult: MonoResult<String, Nothing> = "Some value".toMonoResult()
+        "should keep error when flatMapping result success" {
+            val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
-        monoResult.flatMapMonoResult { x: String -> Result.success("$x some other").liftToMono() }
-            .test()
-            .expectNext(Result.success("Some other value"))
-    }
+            monoResult.flatMapSuccessResult { x: String -> Result.success("$x some other") }
+                .test()
+                .expectNext(Result.error(SomeFailure("Some failure")))
+                .verifyComplete()
+        }
 
-    @Test
-    fun `should biflatmap mono`() {
-        val monoResult: MonoResult<String, RuntimeException> = "Some value".toMonoResult()
+        "should be able to map error in result"{
+            val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("exception")).liftToMono()
 
-        monoResult.biflatMap(
-            mapper = { x: String -> "$x some other".toMono() },
-            errorMapper = { ex -> RuntimeException(ex) })
-            .test()
-            .expectNext(Result.success("Some value some other"))
-    }
+            monoResult.mapFailure { SomeFailure("Failure from ${it.localizedMessage}") }
+                .test()
+                .expectNext(Result.error(SomeFailure("Failure from exception")))
+                .verifyComplete()
+        }
 
-    @Test
-    fun `should liftmap result`() {
-        val result = Result.success("Some value")
+        "should flatMap MonoResult"{
+            val monoResult: MonoResult<String, Nothing> = "Some value".justMonoResult()
 
-        result.liftMap { x -> "$x Some value".toMonoResult<String, Nothing>() }
-            .test()
-            .expectNext(Result.success("Some value Some value"))
+            monoResult.flatMapSuccess { x: String -> Result.success("$x some other").liftToMono() }
+                .test()
+                .expectNext(Result.success("Some value some other"))
+                .verifyComplete()
+        }
+
+        "should keep error when flatMapping MonoResult"{
+            val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
+
+            monoResult.flatMapSuccess { x: String -> (Result.success("$x some other") as Result<String, SomeFailure>).liftToMono() }
+                .test()
+                .expectNext(Result.error(SomeFailure("Some failure")))
+                .verifyComplete()
+        }
+
+        "should flatMap Mono"{
+            val monoResult: MonoResult<String, RuntimeException> = "Some value".justMonoResult()
+
+            monoResult.flatMapMono(
+                mapper = { x: String -> "$x some other".toMono() },
+                errorMapper = { ex -> RuntimeException(ex) })
+                .test()
+                .expectNext(Result.success("Some value some other"))
+                .verifyComplete()
+        }
+
+        "should keep error when flatmapping Mono"{
+            val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
+
+            monoResult.flatMapMono(
+                mapper = { x: String -> "$x some other".toMono() },
+                errorMapper = { ex -> SomeFailure(ex.localizedMessage) })
+                .test()
+                .expectNext(Result.error(SomeFailure("Some failure")))
+                .verifyComplete()
+        }
+
+        "should flatMap failed Mono"{
+            val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
+
+            monoResult.flatMapMono(
+                mapper = { x: String -> RuntimeException("$x some other").toMono<String>() },
+                errorMapper = { ex -> SomeFailure(ex.localizedMessage) })
+                .test()
+                .expectNext(Result.error(SomeFailure("Some value some other")))
+                .verifyComplete()
+        }
+
+        "should liftmap result"{
+            val result = Result.success("Some value")
+
+            result.liftMap { x -> "$x Some value".justMonoResult<String, Nothing>() }
+                .test()
+                .expectNext(Result.success("Some value Some value"))
+                .verifyComplete()
+        }
+
+        "should convert Mono with error to MonoResult"{
+            val mono = Mono.error<String>(RuntimeException("Runtime exception"))
+
+            mono.toResult { SomeFailure(it.localizedMessage) }
+                .test()
+                .expectNext(Result.error(SomeFailure("Runtime exception")))
+                .verifyComplete()
+        }
+
+        "should convert Mono with success to MonoResult"{
+            val mono = Mono.just("Some value")
+
+            mono.toResult { SomeFailure(it.localizedMessage) }
+                .test()
+                .expectNext(Result.success("Some value"))
+                .verifyComplete()
+        }
     }
 }
+
+data class SomeFailure(val errorMessage: String) : Exception()

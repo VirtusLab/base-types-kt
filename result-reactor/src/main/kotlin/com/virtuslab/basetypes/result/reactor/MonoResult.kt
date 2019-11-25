@@ -13,22 +13,22 @@ typealias MonoResult<S, E> = Mono<Result<S, E>>
 
 typealias Completable<E> = Mono<Result<Unit, E>>
 
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.mapResult(mapper: (S) -> S2): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.mapSuccess(mapper: (S) -> S2): MonoResult<S2, E> =
     this.map {
         it.map(mapper)
     }
 
-fun <S : Any, E : Exception, E2 : java.lang.Exception> MonoResult<S, E>.mapResultError(mapper: (E) -> E2): MonoResult<S, E2> =
+fun <S : Any, E : Exception, E2 : java.lang.Exception> MonoResult<S, E>.mapFailure(mapper: (E) -> E2): MonoResult<S, E2> =
     this.map {
         it.mapError(mapper)
     }
 
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccessResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
     this.map {
         it.flatMap(mapper)
     }
 
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapMonoResult(mapper: (S) -> MonoResult<S2, E>): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> MonoResult<S2, E>): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
             is Success -> mapper(result1.value)
@@ -37,8 +37,7 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapMonoResult(mapper
     }
 
 
-// I have no idea how to name it xD
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.biflatMap(mapper: (S) -> Mono<S2>, errorMapper: (Throwable) -> E): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapMono(mapper: (S) -> Mono<S2>, errorMapper: (Throwable) -> E): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
             is Success -> mapper(result1.value).toResult(errorMapper)
@@ -52,8 +51,12 @@ fun <S : Any, E : Exception, S2 : Any> Result<S, E>.liftMap(mapper: (S) -> MonoR
         is Failure -> Failure(error).toMono()
     }
 
-fun <S : Any, E : Exception> S.toMonoResult(): MonoResult<S, E> =
+fun <S : Any, E : Exception> S.justMonoResult(): MonoResult<S, E> =
     Result.of<S, E> { this }
+        .let { Mono.just(it) }
+
+fun <S : Any, E : Exception> E.failedMonoResult(): MonoResult<S, E> =
+    Result.error(this)
         .let { Mono.just(it) }
 
 fun <S : Any, E : Exception> Result<S, E>.liftToMono(): MonoResult<S, E> =
@@ -61,4 +64,4 @@ fun <S : Any, E : Exception> Result<S, E>.liftToMono(): MonoResult<S, E> =
 
 fun <S : Any, E : Exception> Mono<S>.toResult(errorMapper: (Throwable) -> E): MonoResult<S, E> =
     this.map { Result.success(it) as Result<S, E> }
-        .onErrorResume { errorMapper(it).toMono() }
+        .onErrorResume { Result.error(errorMapper(it)).toMono() }
