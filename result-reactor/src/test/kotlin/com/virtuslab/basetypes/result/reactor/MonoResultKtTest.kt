@@ -18,12 +18,31 @@ internal class MonoResultKtTest : StringSpec() {
                 .verifyComplete()
         }
 
+        "should handle exception when mapping success" {
+            val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
+            val runtimeException = RuntimeException()
+
+            monoResult.flatMapResult { if (true) throw runtimeException else Result.success("Some other value") }
+                .test()
+                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
+                .verifyComplete()
+        }
+
         "should keep error when mapping success" {
             val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
             monoResult.mapSuccess { "Some other value" }
                 .test()
                 .expectNext(Result.error(SomeFailure("Some failure")))
+                .verifyComplete()
+        }
+
+        "should be able to map error in result"{
+            val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("exception")).liftMono()
+
+            monoResult.mapFailure { SomeFailure("Failure from ${it.localizedMessage}") }
+                .test()
+                .expectNext(Result.error(SomeFailure("Failure from exception")))
                 .verifyComplete()
         }
 
@@ -42,15 +61,6 @@ internal class MonoResultKtTest : StringSpec() {
             monoResult.flatMapResult { x: String -> Result.success("$x some other") }
                 .test()
                 .expectNext(Result.error(SomeFailure("Some failure")))
-                .verifyComplete()
-        }
-
-        "should be able to map error in result"{
-            val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("exception")).liftMono()
-
-            monoResult.mapFailure { SomeFailure("Failure from ${it.localizedMessage}") }
-                .test()
-                .expectNext(Result.error(SomeFailure("Failure from exception")))
                 .verifyComplete()
         }
 
