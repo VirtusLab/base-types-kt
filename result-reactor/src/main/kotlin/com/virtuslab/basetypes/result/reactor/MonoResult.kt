@@ -23,7 +23,7 @@ fun <S : Any, E : Exception, E2 : java.lang.Exception> MonoResult<S, E>.mapFailu
         it.mapError(mapper)
     }
 
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccessResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
     this.map {
         it.flatMap(mapper)
     }
@@ -36,11 +36,15 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (
         }
     }
 
+fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMap(mapper: (S) -> MonoResult<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
 
-fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapMono(mapper: (S) -> Mono<S2>, errorMapper: (Throwable) -> E): MonoResult<S2, E> =
+fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
+
+
+fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> Mono<S2>, errorMapper: (Throwable) -> E): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
-            is Success -> mapper(result1.value).toResult(errorMapper)
+            is Success -> mapper(result1.value).liftResult(errorMapper)
             is Failure -> Failure(result1.error).toMono()
         }
     }
@@ -59,9 +63,9 @@ fun <S : Any, E : Exception> E.failedMonoResult(): MonoResult<S, E> =
     Result.error(this)
         .let { Mono.just(it) }
 
-fun <S : Any, E : Exception> Result<S, E>.liftToMono(): MonoResult<S, E> =
+fun <S : Any, E : Exception> Result<S, E>.liftMono(): MonoResult<S, E> =
     this.toMono()
 
-fun <S : Any, E : Exception> Mono<S>.toResult(errorMapper: (Throwable) -> E): MonoResult<S, E> =
+fun <S : Any, E : Exception> Mono<S>.liftResult(errorMapper: (Throwable) -> E): MonoResult<S, E> =
     this.map { Result.success(it) as Result<S, E> }
         .onErrorResume { Result.error(errorMapper(it)).toMono() }

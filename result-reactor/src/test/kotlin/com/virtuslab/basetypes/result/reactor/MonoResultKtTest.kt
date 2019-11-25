@@ -30,7 +30,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should flatMap success"{
             val monoResult: MonoResult<String, Nothing> = "Some value".justMonoResult()
 
-            monoResult.flatMapSuccessResult { x: String -> Result.success("$x some other") }
+            monoResult.flatMapResult { x: String -> Result.success("$x some other") }
                 .test()
                 .expectNext(Result.success("Some value some other"))
                 .verifyComplete()
@@ -39,14 +39,14 @@ internal class MonoResultKtTest : StringSpec() {
         "should keep error when flatMapping result success" {
             val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
-            monoResult.flatMapSuccessResult { x: String -> Result.success("$x some other") }
+            monoResult.flatMapResult { x: String -> Result.success("$x some other") }
                 .test()
                 .expectNext(Result.error(SomeFailure("Some failure")))
                 .verifyComplete()
         }
 
         "should be able to map error in result"{
-            val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("exception")).liftToMono()
+            val monoResult: MonoResult<Nothing, RuntimeException> = Result.error(RuntimeException("exception")).liftMono()
 
             monoResult.mapFailure { SomeFailure("Failure from ${it.localizedMessage}") }
                 .test()
@@ -57,7 +57,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should flatMap MonoResult"{
             val monoResult: MonoResult<String, Nothing> = "Some value".justMonoResult()
 
-            monoResult.flatMapSuccess { x: String -> Result.success("$x some other").liftToMono() }
+            monoResult.flatMapSuccess { x: String -> Result.success("$x some other").liftMono() }
                 .test()
                 .expectNext(Result.success("Some value some other"))
                 .verifyComplete()
@@ -66,7 +66,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should keep error when flatMapping MonoResult"{
             val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
-            monoResult.flatMapSuccess { x: String -> (Result.success("$x some other") as Result<String, SomeFailure>).liftToMono() }
+            monoResult.flatMapSuccess { x: String -> (Result.success("$x some other") as Result<String, SomeFailure>).liftMono() }
                 .test()
                 .expectNext(Result.error(SomeFailure("Some failure")))
                 .verifyComplete()
@@ -75,7 +75,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should flatMap Mono"{
             val monoResult: MonoResult<String, RuntimeException> = "Some value".justMonoResult()
 
-            monoResult.flatMapMono(
+            monoResult.flatMapSuccess(
                 mapper = { x: String -> "$x some other".toMono() },
                 errorMapper = { ex -> RuntimeException(ex) })
                 .test()
@@ -86,7 +86,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should keep error when flatmapping Mono"{
             val monoResult: MonoResult<String, SomeFailure> = SomeFailure("Some failure").failedMonoResult()
 
-            monoResult.flatMapMono(
+            monoResult.flatMapSuccess(
                 mapper = { x: String -> "$x some other".toMono() },
                 errorMapper = { ex -> SomeFailure(ex.localizedMessage) })
                 .test()
@@ -97,7 +97,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should flatMap failed Mono"{
             val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
 
-            monoResult.flatMapMono(
+            monoResult.flatMapSuccess(
                 mapper = { x: String -> RuntimeException("$x some other").toMono<String>() },
                 errorMapper = { ex -> SomeFailure(ex.localizedMessage) })
                 .test()
@@ -117,7 +117,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should convert Mono with error to MonoResult"{
             val mono = Mono.error<String>(RuntimeException("Runtime exception"))
 
-            mono.toResult { SomeFailure(it.localizedMessage) }
+            mono.liftResult { SomeFailure(it.localizedMessage) }
                 .test()
                 .expectNext(Result.error(SomeFailure("Runtime exception")))
                 .verifyComplete()
@@ -126,7 +126,7 @@ internal class MonoResultKtTest : StringSpec() {
         "should convert Mono with success to MonoResult"{
             val mono = Mono.just("Some value")
 
-            mono.toResult { SomeFailure(it.localizedMessage) }
+            mono.liftResult { SomeFailure(it.localizedMessage) }
                 .test()
                 .expectNext(Result.success("Some value"))
                 .verifyComplete()
