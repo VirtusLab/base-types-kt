@@ -19,7 +19,9 @@ data class Digit internal constructor(val digit: Int) {
         val EIGHT = Digit(8)
         val NINE = Digit(9)
 
-        fun of(int: Int): Option<Digit> = (int >= 0).maybe { Digit(int) }
+        fun of(int: Int): Option<Digit> =
+            (int >= 0).and(int <= 9)
+                .maybe { Digit(int) }
 
         fun of(int: String): Option<Digit> =
             int.toIntOrNull()

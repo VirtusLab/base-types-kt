@@ -3,14 +3,20 @@ sourceSets {
     getByName("test").java.srcDirs("src/main/kotlin")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 dependencies {
     val junit: String by project
     val kotlinVersion: String by project
+    val kotlintest: String by project
 
     implementation(kotlin("stdlib", kotlinVersion))
 
     implementation("io.reactivex.rxjava2:rxjava:2.2.14")
     implementation("com.github.kittinunf.result:result:2.2.0")
 
-    testImplementation("junit:junit:$junit")
+    testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit")
 }
