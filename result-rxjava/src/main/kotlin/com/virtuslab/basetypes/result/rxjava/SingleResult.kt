@@ -1,7 +1,9 @@
 package com.virtuslab.basetypes.result.rxjava
 
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.Result.Companion
 import com.github.kittinunf.result.Result.Failure
 import com.github.kittinunf.result.Result.Success
 import com.github.kittinunf.result.flatMap
@@ -77,3 +79,15 @@ fun <S : Any, E : Exception> Single<S>.liftResult(errorMapper: (Throwable) -> E)
 //fun <V : Any, E : Exception> SingleResult<V, E>.any(predicate: (V) -> Boolean): Boolean = TODO()
 
 fun <S> S.toSingle(): Single<S> = Single.just(this)
+
+// TODO test
+fun <S : Any, E : Exception> Result<S, E>.toFailure(): Option<E> = this.fold({ None }, { Some(it) })
+
+// TODO test
+fun <S : Any, E : Exception> SingleResult<S, E>.toFailure(): Single<Option<E>> = this.map { it.toFailure() }
+
+// TODO test
+fun <S : Any, E : Exception> Result<S, E>.toSuccess(): Option<S> = this.fold({ Some(it) }, { None })
+
+// TODO test
+fun <S : Any, E : Exception> SingleResult<S, E>.toSuccess(): Single<Option<S>> = this.map { it.toSuccess() }
