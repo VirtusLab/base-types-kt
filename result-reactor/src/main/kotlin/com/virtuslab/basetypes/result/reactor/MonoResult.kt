@@ -23,17 +23,19 @@ fun <S : Any, E : Exception, E2 : java.lang.Exception> MonoResult<S, E>.mapFailu
         it.mapError(mapper)
     }
 
-// TODO test handling errors
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E>): MonoResult<S2, E> =
     this.map {
         it.flatMap(mapper)
     }
 
-// TODO handle errors
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> MonoResult<S2, E>): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
-            is Success -> mapper(result1.value)
+            is Success -> try {
+                mapper(result1.value)
+            } catch (ex: Exception) {
+                Failure(ex as E).toMono()
+            }
             is Failure -> Failure(result1.error).toMono()
         }
     }

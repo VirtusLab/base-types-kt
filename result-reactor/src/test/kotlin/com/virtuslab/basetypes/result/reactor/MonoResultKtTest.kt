@@ -22,7 +22,27 @@ internal class MonoResultKtTest : StringSpec() {
             val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
             val runtimeException = RuntimeException()
 
+            monoResult.mapSuccess { if (true) throw runtimeException else "Some other value" }
+                .test()
+                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
+                .verifyComplete()
+        }
+
+        "should handle exception when mapping result success" {
+            val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
+            val runtimeException = RuntimeException()
+
             monoResult.flatMapResult { if (true) throw runtimeException else Result.success("Some other value") }
+                .test()
+                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
+                .verifyComplete()
+        }
+
+        "should handle exception when flatMapping MonoResult" {
+            val monoResult: MonoResult<String, SomeFailure> = "Some value".justMonoResult()
+            val runtimeException = RuntimeException()
+
+            monoResult.flatMapSuccess { if (true) throw runtimeException else "Some other value".justMonoResult<String, SomeFailure>() }
                 .test()
                 .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
                 .verifyComplete()
