@@ -40,9 +40,9 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (
         }
     }
 
-fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMap(mapper: (S) -> MonoResult<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
-
-fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
+//fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMap(mapper: (S) -> MonoResult<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
+//
+//fun <S : Any, E : Exception, S2 : Any, E2 : Exception> MonoResult<S, E>.flatMapResult(mapper: (S) -> Result<S2, E2>, errorMapper: (E) -> E2): MonoResult<S2, E2> = TODO()
 
 
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> Mono<S2>, errorMapper: (Throwable) -> E): MonoResult<S2, E> =
@@ -74,4 +74,4 @@ fun <S : Any, E : Exception> Mono<S>.liftResult(errorMapper: (Throwable) -> E): 
     this.map { Result.success(it) as Result<S, E> }
         .onErrorResume { Result.error(errorMapper(it)).toMono() }
 
-fun <V : Any, E : Exception> MonoResult<V, E>.any(predicate: (V) -> Boolean): Boolean = TODO()
+//fun <V : Any, E : Exception> MonoResult<V, E>.any(predicate: (V) -> Boolean): Boolean = TODO()

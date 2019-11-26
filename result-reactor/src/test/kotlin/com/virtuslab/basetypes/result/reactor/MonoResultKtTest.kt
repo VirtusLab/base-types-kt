@@ -164,4 +164,3 @@ internal class MonoResultKtTest : StringSpec() {
     }
 }
 
-data class SomeFailure(val errorMessage: String) : Exception()
