@@ -1,36 +1,54 @@
 # base-types-kt
 [![Build Status](https://travis-ci.org/VirtusLab/base-types-kt.svg?branch=master)](https://travis-ci.org/VirtusLab/base-types-kt)
 [![codecov](https://codecov.io/gh/VirtusLab/base-types-kt/branch/master/graph/badge.svg)](https://codecov.io/gh/VirtusLab/base-types-kt)
+[![Release](https://img.shields.io/github/v/release/VirtusLab/base-types-kt.svg)](https://github.com/VirtusLab/base-types-kt/releases)
 
 Set of libraries with some basic types for Kotlin to support **domain-driven functional programming**. 
 
 Incorporated [concepts](#References) are Railway-Oriented Programming (ROP)
  and Domain-Driven Design (DDD).
 
+## Getting started
+
+```kotlin
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation("com.github.VirtusLab.base-types-kt:result-reactor:<version>")
+    implementation("com.github.VirtusLab.base-types-kt:result-rxjava:<version>")
+    implementation("com.github.VirtusLab.base-types-kt:result-arrow:<version>")
+    implementation("com.github.VirtusLab.base-types-kt:refined-types:<version>")
+}
+```
+
 ## Docs
 
 - Refined data types
-    - RawText
-    - NonEmptyText
-    - NonEmptySet
-    - Digit
-    - WholeNumber
-    - NaturalNumber
-    - NonNegativeRealNumber
+    - `RawText`
+    - `NonEmptyText`
+    - `NonEmptySet`
+    - `Digit`
+    - `WholeNumber`
+    - `NaturalNumber`
+    - `NonNegativeRealNumber`
     - ...
     
 
 - ROP with Project Reactor
-    - MonoResult = Mono<Result<T, E>>
-    - CompletableResult = Mono<Result<Unit, E>>    
+    - `MonoResult` = `Mono<Result<T, E>>`
+    - `CompletableResult` = `Mono<Result<Unit, E>>`    
     - ...
         
+        
 - ROP with `arrow-kt`'s IO monad
-    - AsyncResult = IO<Result<T, E>>
+    - `AsyncResult` = `IO<Result<T, E>>`
     - ...
 
+
 - ROP with RxJava 2
-    - SingleResult = Single<Result<T, E>>
+    - `SingleResult` = `Single<Result<T, E>>`
     - ...
     
 ## Contribution
