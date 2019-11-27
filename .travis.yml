@@ -14,4 +14,4 @@ script:
 after_success:
   - ./gradlew jacocoTestReport
   - bash <(curl -s https://codecov.io/bash)
-  - ./deploy_bintray.sh
+#  - ./deploy_bintray.sh
