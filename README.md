@@ -10,9 +10,9 @@ Incorporated [concepts](#References) are Railway-Oriented Programming (ROP)
 
 ## Getting started
 
-```kotlin
+```
 repositories {
-    jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
