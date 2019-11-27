@@ -33,7 +33,7 @@ Incorporated [concepts](#References) are Railway-Oriented Programming (ROP)
     - SingleResult = Single<Result<T, E>>
     - ...
     
-##Contribution
+## Contribution
 Everyone is more than welcome to contribute!
 
 To build, run: `./gradlew clean build`
@@ -42,7 +42,7 @@ To build, run: `./gradlew clean build`
 2. Fork project
 3. Raise a Pull Request
     
-##References
+## References
 
 1. Refinement types concept: https://en.wikipedia.org/wiki/Refinement_type
 2. Refinement types for Haskell: https://nikita-volkov.github.io/refined/
