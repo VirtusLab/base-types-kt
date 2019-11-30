@@ -24,8 +24,7 @@ internal class MonoResultKtTest : StringSpec() {
 
             monoResult.mapSuccess { if (true) throw runtimeException else "Some other value" }
                 .test()
-                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .verifyComplete()
+                .verifyError(RuntimeException::class.java)
         }
 
         "should handle exception when mapping result success" {
@@ -34,8 +33,7 @@ internal class MonoResultKtTest : StringSpec() {
 
             monoResult.flatMapResult { if (true) throw runtimeException else Result.success("Some other value") }
                 .test()
-                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .verifyComplete()
+                .verifyError(RuntimeException::class.java)
         }
 
         "should handle exception when flatMapping MonoResult" {
@@ -44,8 +42,7 @@ internal class MonoResultKtTest : StringSpec() {
 
             monoResult.flatMapSuccess { if (true) throw runtimeException else "Some other value".justMonoResult<String, SomeFailure>() }
                 .test()
-                .expectNext(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .verifyComplete()
+                .verifyError(RuntimeException::class.java)
         }
 
         "should keep error when mapping success" {

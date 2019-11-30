@@ -31,11 +31,7 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapResult(mapper: (S
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> MonoResult<S2, E>): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
-            is Success -> try {
-                mapper(result1.value)
-            } catch (ex: Exception) {
-                Failure(ex as E).toMono()
-            }
+            is Success -> mapper(result1.value)
             is Failure -> Failure(result1.error).toMono()
         }
     }
