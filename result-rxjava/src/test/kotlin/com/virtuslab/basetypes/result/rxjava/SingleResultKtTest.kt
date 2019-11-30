@@ -16,34 +16,31 @@ internal class SingleResultKtTest: StringSpec() {
                 .assertComplete()
         }
 
-        "should handle exception when mapping success" {
+        "should propagate exception when mapping success" {
             val monoResult: SingleResult<String, SomeFailure> = "Some value".justSingleResult()
             val runtimeException = RuntimeException()
 
             monoResult.mapSuccess { if (true) throw runtimeException else "Some other value" }
                 .test()
-                .assertResult(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .assertComplete()
+                .assertError(runtimeException)
         }
 
-        "should handle exception when mapping result success" {
+        "should propagate exception when mapping result success" {
             val monoResult: SingleResult<String, SomeFailure> = "Some value".justSingleResult()
             val runtimeException = RuntimeException()
 
             monoResult.flatMapResult { if (true) throw runtimeException else Result.success("Some other value") }
                 .test()
-                .assertResult(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .assertComplete()
+                .assertError(runtimeException)
         }
 
-        "should handle exception when flatMapping SingleResult" {
+        "should propagate exception when flatMapping SingleResult" {
             val monoResult: SingleResult<String, SomeFailure> = "Some value".justSingleResult()
             val runtimeException = RuntimeException()
 
             monoResult.flatMapSuccess { if (true) throw runtimeException else "Some other value".justSingleResult<String, SomeFailure>() }
                 .test()
-                .assertResult(Result.error(runtimeException) as Result<String, SomeFailure>)
-                .assertComplete()
+                .assertError(runtimeException)
         }
 
         "should keep error when mapping success" {

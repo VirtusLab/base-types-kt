@@ -16,7 +16,7 @@ dependencies {
     implementation(kotlin("stdlib", kotlinVersion))
 
     implementation("io.reactivex.rxjava2:rxjava:2.2.14")
-    implementation("com.github.kittinunf.result:result:2.2.0")
+    implementation(project(":result"))
     implementation("io.arrow-kt:arrow-core:$arrow")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
