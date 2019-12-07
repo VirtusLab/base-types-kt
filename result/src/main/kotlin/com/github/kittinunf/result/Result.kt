@@ -75,6 +75,9 @@ sealed class Result<out V : Any, out E : Exception> {
 
     abstract fun get(): V
 
+    abstract fun isSuccess(): Boolean
+    abstract fun isFailure(): Boolean
+
     class Success<out V : Any>(val value: V) : Result<V, Nothing>() {
         override fun component1(): V? = value
 
@@ -88,6 +91,10 @@ sealed class Result<out V : Any, out E : Exception> {
             if (this === other) return true
             return other is Success<*> && value == other.value
         }
+
+        override fun isSuccess() = true
+
+        override fun isFailure() = false
     }
 
     class Failure<out E : Exception>(val error: E) : Result<Nothing, E>() {
@@ -105,6 +112,10 @@ sealed class Result<out V : Any, out E : Exception> {
             if (this === other) return true
             return other is Failure<*> && error == other.error
         }
+
+        override fun isSuccess() = false
+
+        override fun isFailure() = true
     }
 
     companion object {
