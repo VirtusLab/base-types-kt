@@ -50,6 +50,8 @@ fun <V : Any, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolea
     false
 }
 
+fun <T : Any, E : Exception, S : Any> Result<T, E>.pairWith(s: S): Result<Pair<T, S>, E> = map { it to s }
+
 fun <V : Any, U : Any> Result<V, *>.zip(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
         flatMap { outer -> other().map { outer to it } }
 
