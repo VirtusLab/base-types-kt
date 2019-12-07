@@ -59,6 +59,10 @@ fun <V : Any, E : Exception> List<Result<V, E>>.lift(): Result<List<V>, E> = fol
     }
 }
 
+fun <T: Any> T.toResult() = Result.success(this)
+
+fun <E: Exception> E.toResultFailure() = Result.error(this)
+
 sealed class Result<out V : Any, out E : Exception> {
 
     open operator fun component1(): V? = null
