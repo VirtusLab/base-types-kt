@@ -3,12 +3,12 @@ package com.virtuslab.basetypes.result.rxjava
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.Result.Failure
-import com.github.kittinunf.result.Result.Success
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
-import com.github.kittinunf.result.mapError
+import com.virtuslab.basetypes.result.Result
+import com.virtuslab.basetypes.result.Result.Failure
+import com.virtuslab.basetypes.result.Result.Success
+import com.virtuslab.basetypes.result.flatMap
+import com.virtuslab.basetypes.result.map
+import com.virtuslab.basetypes.result.mapError
 import io.reactivex.Single
 
 typealias SingleResult<T, E> = Single<Result<T, E>>
@@ -32,11 +32,7 @@ fun <S : Any, E : Exception, S2 : Any> SingleResult<S, E>.flatMapResult(mapper: 
 fun <S : Any, E : Exception, S2 : Any> SingleResult<S, E>.flatMapSuccess(mapper: (S) -> SingleResult<S2, E>): SingleResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
-            is Success -> try {
-                mapper(result1.value)
-            } catch (ex: Exception) {
-                Failure(ex as E).toSingle()
-            }
+            is Success -> mapper(result1.value)
             is Failure -> Failure(result1.error).toSingle()
         }
     }
@@ -75,8 +71,6 @@ fun <S : Any, E : Exception> Result<S, E>.liftSingle(): SingleResult<S, E> =
 fun <S : Any, E : Exception> Single<S>.liftResult(errorMapper: (Throwable) -> E): SingleResult<S, E> =
     this.map { Result.success(it) as Result<S, E> }
         .onErrorReturn { Result.error(errorMapper(it)) }
-
-//fun <V : Any, E : Exception> SingleResult<V, E>.any(predicate: (V) -> Boolean): Boolean = TODO()
 
 fun <S> S.toSingle(): Single<S> = Single.just(this)
 

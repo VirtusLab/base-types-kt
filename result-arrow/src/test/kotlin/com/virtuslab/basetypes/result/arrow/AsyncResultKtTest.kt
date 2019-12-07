@@ -1,6 +1,6 @@
 package com.virtuslab.basetypes.result.arrow
 
-import com.github.kittinunf.result.Result
+import com.virtuslab.basetypes.result.Result
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import org.junit.jupiter.api.Test

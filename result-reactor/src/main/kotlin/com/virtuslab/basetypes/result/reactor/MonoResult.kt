@@ -1,11 +1,11 @@
 package com.virtuslab.basetypes.result.reactor
 
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.Result.Failure
-import com.github.kittinunf.result.Result.Success
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
-import com.github.kittinunf.result.mapError
+import com.virtuslab.basetypes.result.Result
+import com.virtuslab.basetypes.result.Result.Failure
+import com.virtuslab.basetypes.result.Result.Success
+import com.virtuslab.basetypes.result.flatMap
+import com.virtuslab.basetypes.result.map
+import com.virtuslab.basetypes.result.mapError
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
@@ -31,11 +31,7 @@ fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapResult(mapper: (S
 fun <S : Any, E : Exception, S2 : Any> MonoResult<S, E>.flatMapSuccess(mapper: (S) -> MonoResult<S2, E>): MonoResult<S2, E> =
     this.flatMap { result1 ->
         when (result1) {
-            is Success -> try {
-                mapper(result1.value)
-            } catch (ex: Exception) {
-                Failure(ex as E).toMono()
-            }
+            is Success -> mapper(result1.value)
             is Failure -> Failure(result1.error).toMono()
         }
     }

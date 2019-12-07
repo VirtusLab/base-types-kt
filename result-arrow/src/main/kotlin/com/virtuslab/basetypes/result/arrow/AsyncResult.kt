@@ -1,10 +1,10 @@
 package com.virtuslab.basetypes.result.arrow
 
 import arrow.fx.IO
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.Result.Failure
-import com.github.kittinunf.result.Result.Success
-import com.github.kittinunf.result.flatMap
+import com.virtuslab.basetypes.result.Result
+import com.virtuslab.basetypes.result.Result.Failure
+import com.virtuslab.basetypes.result.Result.Success
+import com.virtuslab.basetypes.result.flatMap
 
 typealias AsyncResult<T, E> = IO<Result<T, E>>
 
