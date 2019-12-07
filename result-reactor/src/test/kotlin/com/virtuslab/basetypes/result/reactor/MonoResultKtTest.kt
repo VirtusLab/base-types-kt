@@ -1,6 +1,6 @@
 package com.virtuslab.basetypes.result.reactor
 
-import com.github.kittinunf.result.Result
+import com.virtuslab.basetypes.result.Result
 import io.kotlintest.specs.StringSpec
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono

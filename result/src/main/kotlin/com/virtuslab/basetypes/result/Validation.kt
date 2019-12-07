@@ -1,4 +1,4 @@
-package com.github.kittinunf.result
+package com.virtuslab.basetypes.result
 
 class Validation<out E : Exception>(vararg resultSequence: Result<*, E>) {
 

@@ -3,12 +3,12 @@ package com.virtuslab.basetypes.result.rxjava
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.Result.Failure
-import com.github.kittinunf.result.Result.Success
-import com.github.kittinunf.result.flatMap
-import com.github.kittinunf.result.map
-import com.github.kittinunf.result.mapError
+import com.virtuslab.basetypes.result.Result
+import com.virtuslab.basetypes.result.Result.Failure
+import com.virtuslab.basetypes.result.Result.Success
+import com.virtuslab.basetypes.result.flatMap
+import com.virtuslab.basetypes.result.map
+import com.virtuslab.basetypes.result.mapError
 import io.reactivex.Single
 
 typealias SingleResult<T, E> = Single<Result<T, E>>

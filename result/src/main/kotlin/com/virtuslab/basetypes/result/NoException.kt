@@ -1,3 +1,3 @@
-package com.github.kittinunf.result
+package com.virtuslab.basetypes.result
 
 class NoException private constructor() : Exception()

@@ -1,4 +1,4 @@
-package com.github.kittinunf.result
+package com.virtuslab.basetypes.result
 
 inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Success -> value as? X
@@ -50,10 +50,10 @@ fun <V : Any, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolea
     false
 }
 
-fun <V : Any, U : Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+fun <V : Any, U : Any> Result<V, *>.zip(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
         flatMap { outer -> other().map { outer to it } }
 
-fun <V : Any, E : Exception> List<Result<V, E>>.lift(): Result<List<V>, E> = fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
+fun <V : Any, E : Exception> List<Result<V, E>>.sequence(): Result<List<V>, E> = fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
     acc.flatMap { combine ->
         result.map { combine.apply { add(it) } }
     }

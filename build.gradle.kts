@@ -89,10 +89,10 @@ subprojects {
             repo = "maven"
             name = "base-types-kt"
             desc = "The modelling for success/failure of operations in Kotlin"
-            userOrg = "kittinunf"
-            websiteUrl = "https://github.com/krzykrucz/base-types-kt"
-            vcsUrl = "https://github.com/krzykrucz/base-types-kt"
-            setLicenses("MIT")
+            userOrg = "VirtusLab"
+            websiteUrl = "https://github.com/VirtusLab/base-types-kt"
+            vcsUrl = "https://github.com/VirtusLab/base-types-kt"
+            setLicenses("Apache License 2.0")
             version.apply {
                 name = artifactPublish
             }
