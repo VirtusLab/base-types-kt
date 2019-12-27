@@ -8,9 +8,9 @@ class ValidationTests {
 
     @Test
     fun testValidation() {
-        val r1: Result<Int, Exception> = Result.of(1)
-        val r2: Result<Int, Exception> = Result.of(2)
-        val r3: Result<Int, Exception> = Result.of(3)
+        val r1: Result<Int, Exception> = Result.success(1)
+        val r2: Result<Int, Exception> = Result.success(2)
+        val r3: Result<Int, Exception> = Result.success(3)
 
         val validation = Validation(r1, r2, r3)
         assertThat("validation.hasFailures", validation.hasFailure, isEqualTo(false))
@@ -20,9 +20,9 @@ class ValidationTests {
     @Test(expected = SampleException::class)
     fun testValidationWithError() {
 
-        val r1: Result<Int, Exception> = Result.of(1)
+        val r1: Result<Int, Exception> = Result.success(1)
         val r2: Result<Int, Exception> = Result.of { throw SampleException("Not a number") }
-        val r3: Result<Int, Exception> = Result.of(3)
+        val r3: Result<Int, Exception> = Result.success(3)
         val r4: Result<Int, Exception> = Result.of { throw SampleException("Division by zero") }
 
         val validation = Validation(r1, r2, r3, r4)

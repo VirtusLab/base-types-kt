@@ -84,12 +84,12 @@ class ResultTests {
         val result = Result.of<Boolean, NoException> { true }
 
         var beingCalled = false
-        result.success {
+        result.handleSuccess {
             beingCalled = true
         }
 
         var notBeingCalled = true
-        result.failure {
+        result.handleError {
             notBeingCalled = false
         }
 
@@ -102,12 +102,12 @@ class ResultTests {
         val result = Result.of<String, Exception> { File("not_found_file").readText() }
 
         var beingCalled = false
-        result.failure {
+        result.handleError {
             beingCalled = true
         }
 
         var notBeingCalled = true
-        result.success {
+        result.handleSuccess {
             notBeingCalled = false
         }
 
@@ -124,11 +124,11 @@ class ResultTests {
         val result1 = Result.of<Boolean, NoException>(f1)
         val result2 = Result.of<String, Exception>(f2)
 
-        assertThat("result1 is true", result1.get(), equalTo(true))
+        assertThat("result1 is true", result1.getSuccessUnsafe(), equalTo(true))
 
         var result = false
         try {
-            result2.get()
+            result2.getSuccessUnsafe()
         } catch (e: FileNotFoundException) {
             result = true
         }
@@ -142,7 +142,7 @@ class ResultTests {
         val result1 = Result.of(22)
         val result2 = Result.error(KotlinNullPointerException())
 
-        val v1: Int = result1.getAs()!!
+        val v1: Int = result1.getAs<Int>().orNull()!!
         val (v2, err) = result2
 
         assertThat("v1 is equal 22", v1, equalTo(22))
@@ -161,36 +161,33 @@ class ResultTests {
         assertThat("v2 is equal 1", v2, equalTo(0))
     }
 
-    //helper
-    private fun Nothing.count() = 0
-
     @Test
     fun map() {
-        val success = Result.of("success")
-        val failure = Result.error(RuntimeException("failure"))
+        val success: Result<String, RuntimeException> = Result.success("success")
+        val failure: Result<String, RuntimeException> = Result.error(RuntimeException("failure"))
 
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
 
-        assertThat("v1 getAsInt equals 7", v1.getAs(), equalTo(7))
-        assertThat("v2 getAsInt null", v2.getAs<Int>(), nullValue())
+        assertThat("v1 getAsInt equals 7", v1.getAs<Int>().orNull(), equalTo(7))
+        assertThat("v2 getAsInt null", v2.getAs<Int>().orNull(), nullValue())
     }
 
     @Test
     fun flatMap() {
-        val success = Result.of("success")
-        val failure = Result.error(RuntimeException("failure"))
+        val success: Result<String, RuntimeException> = Result.success("success")
+        val failure: Result<String, RuntimeException> = Result.error(RuntimeException("failure"))
 
         val v1 = success.flatMap { Result.of(it.last()) }
         val v2 = failure.flatMap { Result.of(it.count()) }
 
-        assertThat("v1 getAsChar equals s", v1.getAs(), equalTo('s'))
-        assertThat("v2 getAsInt null", v2.getAs<Int>(), nullValue())
+        assertThat("v1 getAsChar equals s", v1.getAs<Char>().orNull(), equalTo('s'))
+        assertThat("v2 getAsInt null", v2.getAs<Int>().orNull(), nullValue())
     }
 
     @Test
     fun mapError() {
-        val success = Result.of("success")
+        val success = Result.success("success") as Result<String, Exception>
         val failure = Result.error(Exception("failure"))
 
         val v1 = success.mapError { InstantiationException(it.message) }
@@ -212,7 +209,7 @@ class ResultTests {
 
 
         assertThat("v1 is success", v1, instanceOf(Result.Success::class.java))
-        assertThat("v1 is success", v1.getAs(), equalTo("success"))
+        assertThat("v1 is success", v1.getAs<String>().orNull(), equalTo("success"))
         assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))
         assertThat("v2 is failure", v2.component2() is IllegalArgumentException, equalTo(true))
     }
@@ -237,7 +234,7 @@ class ResultTests {
         val foo = Result.of<String, Exception> { readFromAssetFileName("foo.txt") }
 
         val v1 = foo.any { "Lorem" in it }
-        val v2 = foo.any { readFromAssetFileName("ff.txt"); true }
+        val v2 = foo.any { "Wrong" in it }
 
         assertThat(v1, equalTo(true))
         assertThat(v2, equalTo(false))
@@ -286,7 +283,7 @@ class ResultTests {
         assertThat("finalResult is success", finalResult, instanceOf(Result.Success::class.java))
         assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, equalTo(true))
         assertThat("value of finalResult has text from foo as left and text from bar as right",
-                v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"), equalTo(true))
+            v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"), equalTo(true))
         assertThat("value of the second component is null", e, nullValue())
     }
 
@@ -325,7 +322,7 @@ class ResultTests {
         var isCalled = false
 
         val newResult = result.map { throws() }
-        newResult.failure { isCalled = true }
+        newResult.handleError { isCalled = true }
 
         assertThat("newResult is transformed into failure", newResult, instanceOf(Result.Failure::class.java))
         assertThat("isCalled is being set as true", isCalled, equalTo(true))
@@ -338,7 +335,7 @@ class ResultTests {
         var isCalled = false
 
         val newResult = result.flatMap { throwsForFlatmap() }
-        newResult.failure { isCalled = true }
+        newResult.handleError { isCalled = true }
 
         assertThat("newResult is transformed into failure", newResult, instanceOf(Result.Failure::class.java))
         assertThat("isCalled is being set as true", isCalled, equalTo(true))
@@ -353,10 +350,10 @@ class ResultTests {
         val s = AlwaysSuccess()
 
         assertThat(s.foo(), instanceOf(Result::class.java))
-        assertThat(s.foo().get(), equalTo(Foo))
+        assertThat(s.foo().getSuccessUnsafe(), equalTo(Foo))
     }
 
-    @Test(expected = IllegalAccessException::class)
+    @Test(expected = NoSuchElementException::class)
     fun failureIsSubtypeOfResult() {
         class AlwaysFailure : GetFoo {
             override fun foo(): Result<Foo, Exception> = Result.error(IllegalAccessException("Can't get foo"))
@@ -366,7 +363,7 @@ class ResultTests {
 
         assertThat(e.foo(), instanceOf(Result::class.java))
 
-        e.foo().get()
+        e.foo().getSuccessUnsafe()
     }
 
     @Test
@@ -375,7 +372,7 @@ class ResultTests {
 
         assertThat(rs, instanceOf(Result::class.java))
         assertThat(rs, instanceOf(Result.Success::class.java))
-        assertThat(rs.get()[0], equalTo(readFromAssetFileName("bar.txt")))
+        assertThat(rs.getSuccessUnsafe()[0], equalTo(readFromAssetFileName("bar.txt")))
     }
 
     @Test
@@ -416,7 +413,6 @@ class ResultTests {
     }
 
     private fun throwsForFlatmap(): Result<Int, Exception> {
-        throws()
-        return Result.of(1)
+        throw SampleException("")
     }
 }
