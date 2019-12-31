@@ -3,6 +3,7 @@ package com.virtuslab.basetypes.refined
 import arrow.core.Option
 import arrow.core.maybe
 
+@Deprecated("use com.virtuslab.basetypes.refined.numbers.Digit")
 data class Digit internal constructor(val digit: Int) {
 
     operator fun compareTo(other: Digit) = digit.compareTo(other = other.digit)
@@ -31,3 +32,4 @@ data class Digit internal constructor(val digit: Int) {
 
     override fun toString() = "$digit"
 }
+
