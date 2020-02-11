@@ -11,12 +11,12 @@ dependencies {
     val junit: String by project
     val kotlinVersion: String by project
     val kotlintest: String by project
-    val reactor = "3.2.12.RELEASE"
+    val reactor = "3.3.0.RELEASE"
 
     implementation(kotlin("stdlib", kotlinVersion))
 
     implementation("io.projectreactor:reactor-core:$reactor")
-    implementation(project(":result"))
+    api(project(":result"))
 
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
