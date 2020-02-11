@@ -16,7 +16,7 @@ dependencies {
     implementation(kotlin("stdlib", kotlinVersion))
 
     implementation("io.projectreactor:reactor-core:$reactor")
-    implementation(project(":result"))
+    api(project(":result"))
 
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")

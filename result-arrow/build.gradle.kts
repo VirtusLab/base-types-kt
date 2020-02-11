@@ -17,7 +17,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:$arrow")
     implementation("io.arrow-kt:arrow-fx:$arrow")
-    implementation(project(":result"))
+    api(project(":result"))
 
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
