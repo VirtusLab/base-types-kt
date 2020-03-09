@@ -1,4 +1,4 @@
-package com.virtuslab.basetypes.refined.numbers
+package com.virtuslab.basetypes.refined
 
 import arrow.core.Option
 import arrow.core.some
@@ -24,7 +24,7 @@ sealed class Digit(val digit: Int) {
         fun of(int: String): Option<Digit> =
             int.toIntOrNull()
                 .let { Option.fromNullable(it) }
-                .flatMap(::of)
+                .flatMap(Companion::of)
     }
 }
 
