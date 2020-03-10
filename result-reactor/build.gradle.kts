@@ -16,9 +16,9 @@ dependencies {
 
     implementation(kotlin("stdlib", kotlinVersion))
 
-    implementation("io.projectreactor:reactor-core:$reactor")
+    api("io.projectreactor:reactor-core:$reactor")
+    api("io.arrow-kt:arrow-fx-reactor:$arrow")
     implementation("io.arrow-kt:arrow-fx:$arrow")
-    implementation("io.arrow-kt:arrow-fx-reactor:$arrow")
 
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
