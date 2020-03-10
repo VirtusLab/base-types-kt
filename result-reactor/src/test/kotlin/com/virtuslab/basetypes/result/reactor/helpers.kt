@@ -10,6 +10,6 @@ fun <E, V> MonoEither<E, V>.test() = mono.map { it as Either }.test()
 
 fun <E, V> FluxEither<E, V>.test() = flux.map { it as Either }.test()
 
-fun <T : Any> T.toFluxRight(): FluxEither<Nothing, T> = this.right().toFluxK()
+fun <T> T.toFluxRight(): FluxEither<Nothing, T> = this.right().toFluxK()
 
-fun <T : Any> T.toFluxLeft(): FluxEither<T, Nothing> = this.left().toFluxK()
+fun <T> T.toFluxLeft(): FluxEither<T, Nothing> = this.left().toFluxK()
