@@ -1,7 +1,10 @@
 package com.virtuslab.basetypes.result.reactor
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.virtuslab.basetypes.Either.reactor.MonoEither
+import com.virtuslab.basetypes.Either.reactor.any
 import com.virtuslab.basetypes.Either.reactor.flatMapEither
 import com.virtuslab.basetypes.Either.reactor.flatMapRight
 import com.virtuslab.basetypes.Either.reactor.liftEither
@@ -119,6 +122,62 @@ internal class MonoEitherKtTest : StringSpec() {
             mono.liftEither { it.localizedMessage }
                 .test()
                 .expectNext(Either.right("Some value"))
+                .verifyComplete()
+        }
+
+        "should convert MonoEither to boolean"{
+            val mono = "Some value".toMonoRight()
+
+            mono.any { it == "Some value" }
+                .test()
+                .expectNext(true)
+                .verifyComplete()
+        }
+
+        "should flat map MonoEither with error mapper"{
+            val monoStrings = "Some value".toMonoRight() as MonoEither<String, String>
+            val monoInts = 1.toMonoRight() as MonoEither<Int, Int>
+
+            monoStrings.flatMapRight({ monoInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+
+        "should flat map MonoEither right with error mapper"{
+            val monoStrings = "Some value".toMonoRight() as MonoEither<String, String>
+            val monoInts = 1.toMonoRight() as MonoEither<Int, Int>
+
+            monoStrings.flatMapRight({ monoInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+        "should flat map MonoEither left with error mapper"{
+            val monoStrings = "Some value".toMonoRight() as MonoEither<String, String>
+            val monoInts = 1.toMonoLeft() as MonoEither<Int, Int>
+
+            monoStrings.flatMapRight({ monoInts }, { "$it" })
+                .test()
+                .expectNext(Either.left("1"))
+                .verifyComplete()
+        }
+        "should flat map Either right with error mapper"{
+            val monoStrings = "Some value".toMonoRight() as MonoEither<String, String>
+            val eitherInts = 1.right() as Either<Int, Int>
+
+            monoStrings.flatMapEither({ eitherInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+        "should flat map Either left with error mapper"{
+            val monoStrings = "Some value".toMonoRight() as MonoEither<String, String>
+            val eitherInts = 1.left() as Either<Int, Int>
+
+            monoStrings.flatMapEither({ eitherInts }, { "$it" })
+                .test()
+                .expectNext(Either.left("1"))
                 .verifyComplete()
         }
     }

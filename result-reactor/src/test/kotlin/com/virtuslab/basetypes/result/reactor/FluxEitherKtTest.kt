@@ -1,6 +1,8 @@
 package com.virtuslab.basetypes.result.reactor
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import io.kotlintest.specs.StringSpec
 import reactor.core.publisher.Flux
 
@@ -112,6 +114,53 @@ internal class FluxEitherKtTest : StringSpec() {
             flux.liftEither { it.localizedMessage }
                 .test()
                 .expectNext(Either.right("Some value"))
+                .verifyComplete()
+        }
+
+        "should flat map FluxEither with error mapper"{
+            val FluxStrings = "Some value".toFluxRight() as FluxEither<String, String>
+            val FluxInts = 1.toFluxRight() as FluxEither<Int, Int>
+
+            FluxStrings.flatMapRight({ FluxInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+
+        "should flat map FluxEither right with error mapper"{
+            val FluxStrings = "Some value".toFluxRight() as FluxEither<String, String>
+            val FluxInts = 1.toFluxRight() as FluxEither<Int, Int>
+
+            FluxStrings.flatMapRight({ FluxInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+        "should flat map FluxEither left with error mapper"{
+            val FluxStrings = "Some value".toFluxRight() as FluxEither<String, String>
+            val FluxInts = 1.toFluxLeft() as FluxEither<Int, Int>
+
+            FluxStrings.flatMapRight({ FluxInts }, { "$it" })
+                .test()
+                .expectNext(Either.left("1"))
+                .verifyComplete()
+        }
+        "should flat map Either right with error mapper"{
+            val FluxStrings = "Some value".toFluxRight() as FluxEither<String, String>
+            val eitherInts = 1.right() as Either<Int, Int>
+
+            FluxStrings.flatMapEither({ eitherInts }, { "$it" })
+                .test()
+                .expectNext(Either.right(1))
+                .verifyComplete()
+        }
+        "should flat map Either left with error mapper"{
+            val FluxStrings = "Some value".toFluxRight() as FluxEither<String, String>
+            val eitherInts = 1.left() as Either<Int, Int>
+
+            FluxStrings.flatMapEither({ eitherInts }, { "$it" })
+                .test()
+                .expectNext(Either.left("1"))
                 .verifyComplete()
         }
     }

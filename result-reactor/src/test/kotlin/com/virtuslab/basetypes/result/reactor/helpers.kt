@@ -1,14 +1,14 @@
 package com.virtuslab.basetypes.result.reactor
 
-import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.virtuslab.basetypes.Either.reactor.MonoEither
+import arrow.fx.reactor.FluxK
+import arrow.fx.reactor.MonoK
 import reactor.test.test
 
-fun <E, V> MonoEither<E, V>.test() = mono.map { it as Either }.test()
+fun <V> MonoK<V>.test() = mono.map { it as V }.test()
 
-fun <E, V> FluxEither<E, V>.test() = flux.map { it as Either }.test()
+fun <V> FluxK<V>.test() = flux.map { it as V }.test()
 
 fun <T> T.toFluxRight(): FluxEither<Nothing, T> = this.right().toFluxK()
 

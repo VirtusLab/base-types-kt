@@ -2,6 +2,7 @@ package com.virtuslab.basetypes.result.reactor
 
 import arrow.core.Either
 import arrow.core.flatMap
+import arrow.core.left
 import arrow.fx.reactor.FluxK
 import arrow.fx.reactor.handleErrorWith
 import arrow.fx.reactor.k
@@ -19,6 +20,7 @@ fun <S, E, E2> FluxEither<E, S>.mapLeft(mapper: (E) -> E2): FluxEither<E2, S> =
         it.mapLeft(mapper)
     }
 
+// TODO refine name
 fun <S, E, S2> FluxEither<E, S>.flatMapEither(mapper: (S) -> Either<E, S2>): FluxEither<E, S2> =
     this.map {
         it.flatMap(mapper)
@@ -32,9 +34,26 @@ fun <S, E, S2> FluxEither<E, S>.flatMapRight(mapper: (S) -> FluxEither<E, S2>): 
         }
     }
 
-//fun <S, E, S2, E2> FluxEither<E, S>.flatMap(mapper: (S) -> FluxEither<S2, E2>, errorMapper: (E) -> E2): FluxEither<S2, E2> = TODO()
-//
-//fun <S, E, S2, E2> FluxEither<E, S>.flatMapEither(mapper: (S) -> Either<S2, E2>, errorMapper: (E) -> E2): FluxEither<S2, E2> = TODO()
+// TODO refine name
+fun <S, E, S2, E2> FluxEither<E, S>.flatMapEither(
+    mapper: (S) -> Either<E2, S2>,
+    leftMapper: (E2) -> E
+): FluxEither<E, S2> = this.map {
+    when (it) {
+        is Either.Right -> mapper(it.b).mapLeft(leftMapper)
+        is Either.Left -> it.a.left()
+    }
+}
+
+fun <S, E, S2, E2> FluxEither<E, S>.flatMapRight(
+    mapper: (S) -> FluxEither<E2, S2>,
+    leftMapper: (E2) -> E
+): FluxEither<E, S2> = this.flatMap {
+    when (it) {
+        is Either.Right -> mapper(it.b).mapLeft(leftMapper)
+        is Either.Left -> it.a.left().toFluxK()
+    }
+}
 
 fun <S, E> FluxK<S>.liftEither(): FluxEither<E, S> = this.map { Either.right(it) as Either<E, S> }
 
