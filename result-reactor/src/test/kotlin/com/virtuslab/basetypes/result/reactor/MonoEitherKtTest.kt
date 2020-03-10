@@ -5,10 +5,9 @@ import com.virtuslab.basetypes.Either.reactor.MonoEither
 import com.virtuslab.basetypes.Either.reactor.flatMapEither
 import com.virtuslab.basetypes.Either.reactor.flatMapRight
 import com.virtuslab.basetypes.Either.reactor.liftEither
-import com.virtuslab.basetypes.Either.reactor.liftMapRight
-import com.virtuslab.basetypes.Either.reactor.liftMono
 import com.virtuslab.basetypes.Either.reactor.mapLeft
 import com.virtuslab.basetypes.Either.reactor.mapRight
+import com.virtuslab.basetypes.Either.reactor.toMono
 import io.kotlintest.specs.StringSpec
 import reactor.core.publisher.Mono
 
@@ -90,7 +89,7 @@ internal class MonoEitherKtTest : StringSpec() {
         "should flatMap MonoEither"{
             val monoEither: MonoEither<Nothing, String> = "Some value".toMonoRight()
 
-            monoEither.flatMapRight { x: String -> Either.right("$x some other").liftMono() }
+            monoEither.flatMapRight { x: String -> Either.right("$x some other").toMono() }
                 .test()
                 .expectNext(Either.right("Some value some other"))
                 .verifyComplete()
@@ -99,18 +98,9 @@ internal class MonoEitherKtTest : StringSpec() {
         "should keep error when flatMapping MonoEither"{
             val monoEither: MonoEither<String, String> = "Some failure".toMonoLeft()
 
-            monoEither.flatMapRight { x: String -> (Either.right("$x some other") as Either<String, String>).liftMono() }
+            monoEither.flatMapRight { x: String -> (Either.right("$x some other") as Either<String, String>).toMono() }
                 .test()
                 .expectNext(Either.left("Some failure"))
-                .verifyComplete()
-        }
-
-        "should liftmap either"{
-            val either = Either.right("Some value")
-
-            either.liftMapRight { x -> "$x 2".toMonoRight() }
-                .test()
-                .expectNext(Either.right("Some value 2"))
                 .verifyComplete()
         }
 

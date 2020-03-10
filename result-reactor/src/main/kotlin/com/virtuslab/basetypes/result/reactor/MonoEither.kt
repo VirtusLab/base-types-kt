@@ -34,22 +34,18 @@ fun <S : Any, E : Any, S2 : Any> MonoEither<E, S>.flatMapRight(mapper: (S) -> Mo
             is Either.Left -> Either.left(either.a).toMonoK()
         }
     }
-
-//fun <S : Any, E : Any, S2 : Any, E2 : Any> MonoEither<E, S>.flatMap(mapper: (S) -> MonoEither<S2, E2>, errorMapper: (E) -> E2): MonoEither<S2, E2> = TODO()
+//
+//fun <S : Any, E : Any, S2 : Any, E2 : Any> MonoEither<E, S>.mapRight(mapper: (S) -> MonoEither<S2, E2>, errorMapper: (E) -> E2): MonoEither<S2, E2> = TODO()
+//
+//fun <S : Any, E : Any, S2 : Any, E2 : Any> MonoEither<E, S>.flatMapRight(mapper: (S) -> MonoEither<S2, E2>, errorMapper: (E) -> E2): MonoEither<S2, E2> = TODO()
 //
 //fun <S : Any, E : Any, S2 : Any, E2 : Any> MonoEither<E, S>.flatMapEither(mapper: (S) -> Either<S2, E2>, errorMapper: (E) -> E2): MonoEither<S2, E2> = TODO()
-
-fun <S : Any, E : Any, S2 : Any> Either<E, S>.liftMapRight(mapper: (S) -> MonoEither<E, S2>): MonoEither<E, S2> =
-    when (this) {
-        is Either.Right -> mapper(b)
-        is Either.Left -> Either.left(a).toMonoK()
-    }
 
 fun <E, S> MonoK.Companion.justRight(s: S): MonoEither<E, S> = Either.right(s).toMonoK()
 
 fun <E, S> MonoK.Companion.justLeft(e: E): MonoEither<E, S> = Either.left(e).toMonoK()
 
-fun <S : Any, E : Any> Either<E, S>.liftMono(): MonoEither<E, S> = this.toMonoK()
+fun <S : Any, E : Any> Either<E, S>.toMono(): MonoEither<E, S> = this.toMonoK()
 
 fun <S : Any, E : Any> MonoK<S>.liftEither(): MonoEither<E, S> = this.map { Either.right(it) as Either<E, S> }
 
