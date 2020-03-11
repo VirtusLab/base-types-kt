@@ -16,9 +16,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.VirtusLab.base-types-kt:result-reactor:<version>")
-    implementation("com.github.VirtusLab.base-types-kt:result-rxjava:<version>")
-    implementation("com.github.VirtusLab.base-types-kt:result-arrow:<version>")
+    implementation("com.github.VirtusLab.base-types-kt:rop-reactor:<version>")
+    implementation("com.github.VirtusLab.base-types-kt:rop-rx2:<version>")
     implementation("com.github.VirtusLab.base-types-kt:refined-types:<version>")
 }
 ```
@@ -37,18 +36,14 @@ dependencies {
     
 
 - ROP with Project Reactor
-    - `MonoResult` = `Mono<Result<T, E>>`
-    - `CompletableResult` = `Mono<Result<Unit, E>>`    
+    - `MonoResult` = `MonoK<Either<E, V>>`
+    - `FluxResult` = `FluxK<Either<E, V>>`
+    - `CompletableResult` = `MonoResult<E, Nothing>`    
     - ...
         
-        
-- ROP with `arrow-kt`'s IO monad
-    - `AsyncResult` = `IO<Result<T, E>>`
-    - ...
-
 
 - ROP with RxJava 2
-    - `SingleResult` = `Single<Result<T, E>>`
+    - `SingleResult` = `SingleK<Result<T, E>>`
     - ...
     
 ## Contribution
