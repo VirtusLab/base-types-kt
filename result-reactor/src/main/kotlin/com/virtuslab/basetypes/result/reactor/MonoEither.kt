@@ -3,11 +3,10 @@ package com.virtuslab.basetypes.Either.reactor
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
+import arrow.core.right
 import arrow.fx.reactor.MonoK
 import arrow.fx.reactor.handleErrorWith
 import arrow.fx.reactor.k
-import com.virtuslab.basetypes.result.reactor.toMonoK
-import com.virtuslab.basetypes.result.reactor.toMonoLeft
 import reactor.core.publisher.Mono
 
 typealias MonoEither<E, V> = MonoK<Either<E, V>>
@@ -81,3 +80,11 @@ fun <V, E> MonoEither<E, V>.any(predicate: (V) -> Boolean): MonoK<Boolean> = thi
         else -> false
     }
 }
+
+fun <T> T.toMonoK(): MonoK<T> = Mono.just(this).k()
+
+fun <T> T.toMonoRight(): MonoEither<Nothing, T> = this.right().toMonoK()
+
+fun <T> T.toMonoLeft(): MonoEither<T, Nothing> = this.left().toMonoK()
+
+fun <T> Throwable.toMonoK(): MonoK<T> = Mono.error<T>(this).k()

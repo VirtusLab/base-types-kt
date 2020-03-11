@@ -1,8 +1,6 @@
 package com.virtuslab.basetypes.result.reactor
 
 import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import arrow.fx.IO
 import arrow.fx.IOResult
 import arrow.fx.reactor.FluxK
@@ -34,17 +32,7 @@ fun <A> MonoK<A>.toIO(): IO<Nothing, A> =
 
 fun <A> Mono<A>.toIO(): IO<Nothing, A> = k().toIO()
 
-fun <T> T.toMonoK(): MonoK<T> = Mono.just(this).k()
-
-fun <T> T.toMonoRight(): MonoEither<Nothing, T> = this.right().toMonoK()
-
-fun <T> T.toMonoLeft(): MonoEither<T, Nothing> = this.left().toMonoK()
-
-fun <T> Throwable.toMonoK(): MonoK<T> = Mono.error<T>(this).k()
-
 //flux
-fun <T> T.toFluxK(): FluxK<T> = Flux.just(this).k()
-
 fun <E, A> IO<E, A>.toFlux(): FluxEither<E, A> =
     Flux.create<Either<E, A>> { sink ->
         val dispose = unsafeRunAsyncCancellableEither { result ->

@@ -71,3 +71,5 @@ fun <V, E> FluxEither<E, V>.any(predicate: (V) -> Boolean): FluxK<Boolean> = thi
         else -> false
     }
 }
+
+fun <T> T.toFluxK(): FluxK<T> = Flux.just(this).k()
