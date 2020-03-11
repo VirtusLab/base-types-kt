@@ -23,13 +23,25 @@ fun <E, A> IO<E, A>.toMono(): MonoEither<E, A> =
         sink.onCancel { dispose.invoke() }
     }.let { MonoK(it) }
 
-fun <A> MonoK<A>.toIO(): IO<Nothing, A> =
+fun <A> Mono<A>.toIO(): IO<Nothing, A> =
     IO.cancellable { cb ->
-        val dispose = this.value().subscribe({ a -> cb(IOResult.Success(a)) }, { e -> cb(IOResult.Exception(e)) })
+        val dispose = this.subscribe({ a -> cb(IOResult.Success(a)) }, { e -> cb(IOResult.Exception(e)) })
         IO { dispose.dispose() }
     }
 
-fun <A> Mono<A>.toIO(): IO<Nothing, A> = k().toIO()
+fun <E, V> MonoEither<E, V>.toIO(): IO<E, V> =
+    IO.cancellable { cb ->
+        val dispose = this.value().subscribe(
+            { either ->
+                when (either) {
+                    is Either.Left -> IOResult.Error(either.a)
+                    is Either.Right -> IOResult.Success(either.b)
+                }.let { cb(it) }
+            },
+            { e -> cb(IOResult.Exception(e)) }
+        )
+        IO { dispose.dispose() }
+    }
 
 fun <E, A> IO<E, A>.toFlux(): FluxEither<E, A> =
     Flux.create<Either<E, A>> { sink ->
