@@ -17,8 +17,7 @@ dependencies {
 
     implementation(kotlin("stdlib", kotlinVersion))
 
-    implementation("io.arrow-kt:arrow-core:$arrow")
-    implementation("io.arrow-kt:arrow-core-data:$arrow")
+    api("io.arrow-kt:arrow-core:$arrow")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintest")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit")
