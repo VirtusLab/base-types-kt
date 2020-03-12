@@ -3,7 +3,13 @@ package com.virtuslab.basetypes.refined
 import arrow.core.Option
 import arrow.core.some
 
-sealed class Digit(val digit: Int) {
+sealed class Digit(val value: Int) {
+
+    override fun toString() = "$value"
+
+    operator fun compareTo(another: Digit) = value.compareTo(another.value)
+
+    operator fun compareTo(another: Int) = value.compareTo(another)
 
     companion object {
         fun of(int: Int): Option<Digit> =
@@ -20,6 +26,8 @@ sealed class Digit(val digit: Int) {
                 9 -> Nine.some()
                 else -> Option.empty()
             }
+
+        fun of(int: Char): Option<Digit> = of("$int")
 
         fun of(int: String): Option<Digit> =
             int.toIntOrNull()
