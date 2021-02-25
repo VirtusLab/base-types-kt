@@ -1,7 +1,5 @@
 package com.virtuslab.basetypes.refined
 
-import arrow.core.None
-import arrow.core.toOption
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
@@ -10,11 +8,11 @@ internal class WholeNumberTest : StringSpec() {
     init {
         "of" {
             forAll(Gen.positiveIntegers()) { a: Int ->
-                WholeNumber.of(a).nonEmpty()
+                WholeNumber.of(a) != null
             }
 
             forAll(Gen.negativeIntegers()) { a: Int ->
-                WholeNumber.of(a).isEmpty()
+                WholeNumber.of(a) == null
             }
         }
 
@@ -26,20 +24,20 @@ internal class WholeNumberTest : StringSpec() {
 
         "decrement" {
             forAll(Gen.positiveIntegers()) { a: Int ->
-                WholeNumber(a).decrement() == WholeNumber(a - 1).toOption()
+                WholeNumber(a).dec() == WholeNumber(a - 1)
             }
 
             forAll(Gen.from(listOf(0))) { zero ->
-                WholeNumber(zero).decrement().isEmpty()
+                WholeNumber(zero).dec() == null
             }
         }
 
         "minus" {
             forAll(Gen.positiveIntegers(), Gen.positiveIntegers()) { a, b ->
                 if (a >= b) {
-                    WholeNumber(a) - WholeNumber(b) == WholeNumber(a-b).toOption()
+                    WholeNumber(a) - WholeNumber(b) == WholeNumber(a - b)
                 } else {
-                    WholeNumber(a) - WholeNumber(b) == None
+                    WholeNumber(a) - WholeNumber(b) == null
                 }
             }
         }

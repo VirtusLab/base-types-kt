@@ -1,5 +1,6 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
@@ -111,5 +112,9 @@ subprojects {
             xml.isEnabled = true
             csv.isEnabled = false
         }
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
     }
 }

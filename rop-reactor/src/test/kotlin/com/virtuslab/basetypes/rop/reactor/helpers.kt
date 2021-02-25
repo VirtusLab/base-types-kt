@@ -7,5 +7,3 @@ import reactor.test.test
 fun <V> MonoK<V>.test() = mono.map { it as V }.test()
 
 fun <V> FluxK<V>.test() = flux.map { it as V }.test()
-
-internal object SomeException : RuntimeException()

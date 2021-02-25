@@ -8,11 +8,11 @@ internal class NaturalNumberTest : StringSpec() {
     init {
         "of" {
             forAll(Gen.positiveIntegers()) { a: Int ->
-                NaturalNumber.of(a).nonEmpty()
+                NaturalNumber.of(a) != null
             }
 
             forAll(Gen.negativeIntegers()) { a: Int ->
-                NaturalNumber.of(a).isEmpty()
+                NaturalNumber.of(a) == null
             }
         }
 

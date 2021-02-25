@@ -11,29 +11,29 @@ internal class DigitTest : StringSpec() {
     init {
         "of(Int)" {
             forAll(Gen.choose(0, 10)) { a: Int ->
-                Digit.of(a).nonEmpty()
+                Digit.of(a) != null
             }
 
             forAll(Gen.negativeIntegers()) { a: Int ->
-                Digit.of(a).isEmpty()
+                Digit.of(a) == null
             }
 
             forAll(Gen.integersOver9()) { a: Int ->
-                Digit.of(a).isEmpty()
+                Digit.of(a) == null
             }
         }
 
         "of(String)" {
             forAll(Gen.choose(0, 10)) { a: Int ->
-                Digit.of(a.toString()).nonEmpty()
+                Digit.of(a.toString()) != null
             }
 
             forAll(Gen.negativeIntegers()) { a: Int ->
-                Digit.of(a.toString()).isEmpty()
+                Digit.of(a.toString()) == null
             }
 
             forAll(Gen.integersOver9()) { a: Int ->
-                Digit.of(a).isEmpty()
+                Digit.of(a) == null
             }
         }
     }
