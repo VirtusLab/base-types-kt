@@ -1,48 +1,59 @@
 package com.virtuslab.basetypes.refined
 
-import arrow.core.Option
-import arrow.core.some
+sealed class Digit {
 
-sealed class Digit(val value: Int) {
+    override fun toString() = "$number"
 
-    override fun toString() = "$value"
+    operator fun compareTo(another: Digit) = number.compareTo(another.number)
 
-    operator fun compareTo(another: Digit) = value.compareTo(another.value)
-
-    operator fun compareTo(another: Int) = value.compareTo(another)
+    operator fun compareTo(another: Int) = number.compareTo(another)
 
     companion object {
-        fun of(int: Int): Option<Digit> =
+        fun of(int: Int): Digit? =
             when (int) {
-                0 -> Zero.some()
-                1 -> One.some()
-                2 -> Two.some()
-                3 -> Three.some()
-                4 -> Four.some()
-                5 -> Five.some()
-                6 -> Six.some()
-                7 -> Seven.some()
-                8 -> Eight.some()
-                9 -> Nine.some()
-                else -> Option.empty()
+                0 -> Zero
+                1 -> One
+                2 -> Two
+                3 -> Three
+                4 -> Four
+                5 -> Five
+                6 -> Six
+                7 -> Seven
+                8 -> Eight
+                9 -> Nine
+                else -> null
             }
 
-        fun of(int: Char): Option<Digit> = of("$int")
+        fun of(int: Char): Digit? =
+            of("$int")
 
-        fun of(int: String): Option<Digit> =
+        fun of(int: String): Digit? =
             int.toIntOrNull()
-                .let { Option.fromNullable(it) }
-                .flatMap(Companion::of)
+                ?.let(::of)
     }
 }
 
-object Zero : Digit(0)
-object One : Digit(1)
-object Two : Digit(2)
-object Three : Digit(3)
-object Four : Digit(4)
-object Five : Digit(5)
-object Six : Digit(6)
-object Seven : Digit(7)
-object Eight : Digit(8)
-object Nine : Digit(9)
+object Zero : Digit()
+object One : Digit()
+object Two : Digit()
+object Three : Digit()
+object Four : Digit()
+object Five : Digit()
+object Six : Digit()
+object Seven : Digit()
+object Eight : Digit()
+object Nine : Digit()
+
+val Digit.number: Int
+    get() = when (this) {
+        Eight -> 0
+        Five -> 1
+        Four -> 2
+        Nine -> 3
+        One -> 4
+        Seven -> 5
+        Six -> 6
+        Three -> 7
+        Two -> 8
+        Zero -> 9
+    }

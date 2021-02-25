@@ -1,9 +1,5 @@
 package com.virtuslab.basetypes.refined
 
-import arrow.core.None
-import arrow.core.Option
-import arrow.core.Some
-
 data class NaturalNumber internal constructor(val number: Int) {
     companion object {
         val ONE = NaturalNumber(1)
@@ -16,9 +12,9 @@ data class NaturalNumber internal constructor(val number: Int) {
         val EIGHT = NaturalNumber(8)
         val NINE = NaturalNumber(9)
 
-        fun of(int: Int): Option<NaturalNumber> =
-            if (int > 0) Some(NaturalNumber(int))
-            else None
+        fun of(int: Int): NaturalNumber? =
+            if (int > 0) NaturalNumber(int)
+            else null
     }
 
     operator fun plus(that: NaturalNumber): NaturalNumber =

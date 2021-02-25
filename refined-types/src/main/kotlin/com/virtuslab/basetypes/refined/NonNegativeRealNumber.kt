@@ -1,18 +1,15 @@
 package com.virtuslab.basetypes.refined
 
-import arrow.core.Option
-import arrow.core.maybe
-
 data class NonNegativeRealNumber internal constructor(val number: Double) {
-    operator fun minus(another: NonNegativeRealNumber): Option<NonNegativeRealNumber> =
+    operator fun minus(another: NonNegativeRealNumber): NonNegativeRealNumber? =
         (this.number - another.number)
             .let(::of)
 
-    operator fun minus(another: Double): Option<NonNegativeRealNumber> =
+    operator fun minus(another: Double): NonNegativeRealNumber? =
         (this.number - another)
             .let(::of)
 
-    operator fun minus(another: Int): Option<NonNegativeRealNumber> =
+    operator fun minus(another: Int): NonNegativeRealNumber? =
         (this.number - another)
             .let(::of)
 
@@ -32,8 +29,9 @@ data class NonNegativeRealNumber internal constructor(val number: Double) {
     companion object {
         val ZERO: NonNegativeRealNumber = NonNegativeRealNumber(0.0)
 
-        fun of(double: Double): Option<NonNegativeRealNumber> =
-            (double >= 0).maybe { NonNegativeRealNumber(double) }
+        fun of(double: Double): NonNegativeRealNumber? =
+            double.takeIf { it >= 0 }
+                ?.let(::NonNegativeRealNumber)
     }
 
     override fun toString() = "$number"
